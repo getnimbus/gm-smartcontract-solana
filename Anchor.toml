@@ -1,0 +1,19 @@
+[toolchain]
+
+[features]
+seeds = false
+skip-lint = false
+
+[programs.localnet]
+todo_app = "HEbDr48N2nsk8dDXaXcZxG7NNg9XA8JjAD3y2VtfVXc2"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "Localnet"
+wallet = "/Users/mac/.config/solana/id.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/create-profile.ts"
+# test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/create-todo.ts"
