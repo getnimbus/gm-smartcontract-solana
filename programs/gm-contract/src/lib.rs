@@ -16,11 +16,16 @@ pub mod gm_contract {
         instructions::create_pool(ctx)
     }
 
-    pub fn deposit_prize(ctx: Context<DepositPrize>, data: Vec<Pubkey>, amount: u64) -> Result<()> {
-        instructions::deposit_prize(ctx, data, amount)
+    pub fn deposit_prize(
+        ctx: Context<DepositPrize>,
+        data: Vec<Pubkey>,
+        amount: u64,
+        expired_time: u64,
+    ) -> Result<()> {
+        instructions::deposit_prize(ctx, data, amount, expired_time)
     }
 
-    // pub fn withdraw_prize(ctx: Context<WithdrawPrize>, amount: u64) -> Result<()> {
-    //     instructions::withdraw_prize(ctx, amount)
-    // }
+    pub fn withdraw_prize(ctx: Context<WithdrawPrize>) -> Result<()> {
+        instructions::withdraw_prize(ctx)
+    }
 }

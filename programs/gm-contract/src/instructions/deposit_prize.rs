@@ -1,21 +1,66 @@
+use crate::errors::*;
+use crate::state::*;
+
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
     token::{self, Mint, Token, TokenAccount, Transfer},
 };
-use spl_math::uint::U256;
-use std::mem::size_of;
 
-use crate::state::Pool;
+pub fn deposit_prize(
+    ctx: Context<DepositPrize>,
+    data: Vec<Pubkey>,
+    amount: u64,
+    expired_time: u64,
+) -> Result<()> {
+    // TODO: check previous winner list and withdraw all prize to admin amount
 
-pub fn deposit_prize(ctx: Context<DepositPrize>, data: Vec<Pubkey>, amount: u64) -> Result<()> {
-    // TODO: check data length == 3
-    // TODO: check amount > 0 and depositer amount > 0
-    // TODO: check depositer = admin
+    require!(
+        ctx.accounts.depositor.key() == ctx.accounts.pool.admin.key(),
+        AppError::InvalidAuthority
+    );
+    require!(data.len() == 3, AppError::InvalidWinnerList);
+    require!(amount > 0, AppError::InvalidPrizeAmount);
+    require!(
+        amount <= ctx.accounts.depositor_account.amount,
+        AppError::DepositTooSmall
+    );
+
+    let clock = Clock::get()?;
+    require!(expired_time > clock.slot, AppError::InvalidExpiredTime);
+
+    // transfer all remain prize to admin
+    if ctx.accounts.pool_account.amount > 0 {
+        // pool authority signer
+        let authority_bump = ctx.bumps.pool_authority;
+
+        let authority_seeds = &[
+            b"authority".as_ref(),
+            &ctx.accounts.pool.admin.to_bytes(),
+            &[authority_bump],
+        ];
+
+        let signer_seeds = &[&authority_seeds[..]];
+
+        // transfer all remain token from prize pool to admin
+        token::transfer(
+            CpiContext::new_with_signer(
+                ctx.accounts.token_program.to_account_info(),
+                Transfer {
+                    from: ctx.accounts.pool_account.to_account_info(),
+                    to: ctx.accounts.depositor_account.to_account_info(),
+                    authority: ctx.accounts.pool_authority.to_account_info(),
+                },
+                signer_seeds,
+            ),
+            ctx.accounts.pool_account.amount,
+        )?;
+    }
 
     // set winner list
     let pool = &mut ctx.accounts.pool;
     pool.winner_list = data;
+    pool.expired_time = expired_time;
 
     // transfer token A from depositer to pool account
     token::transfer(

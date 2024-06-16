@@ -1,11 +1,11 @@
-use crate::state::Pool;
+use crate::state::*;
+
 use anchor_lang::prelude::*;
 use anchor_spl::token::TokenAccount;
 use anchor_spl::{
     associated_token::AssociatedToken,
     token::{Mint, Token},
 };
-use std::mem::size_of;
 
 pub fn create_pool(ctx: Context<CreatePool>) -> Result<()> {
     let pool = &mut ctx.accounts.pool;

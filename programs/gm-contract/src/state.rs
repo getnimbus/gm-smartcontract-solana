@@ -7,6 +7,8 @@ pub struct Pool {
 
     pub mint_token: Pubkey,
 
-    #[max_len(3)]
+    #[max_len(4)]
     pub winner_list: Vec<Pubkey>,
+
+    pub expired_time: u64,
 }

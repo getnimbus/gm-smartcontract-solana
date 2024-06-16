@@ -16,4 +16,5 @@ wallet = "/Users/mac/.config/solana/id.json"
 
 [scripts]
 # test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/create-pool.ts"
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/deposit-prize.ts"
+# test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/deposit-prize.ts"
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/withdraw-prize.ts"

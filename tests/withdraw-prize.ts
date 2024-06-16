@@ -27,13 +27,14 @@ BN.prototype.sqrt = function sqrt() {
   return z;
 };
 
-describe("deposit-prize", () => {
+describe("withdraw-prize", () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
 
   const program = anchor.workspace.GmContract as Program<GmContract>;
 
   const payer = anchor.web3.Keypair.generate();
+  const winner = anchor.web3.Keypair.generate();
   const mintTokenDecimals = 6;
 
   let poolPda: anchor.web3.PublicKey;
@@ -44,11 +45,19 @@ describe("deposit-prize", () => {
   let poolAccount: anchor.web3.PublicKey;
 
   let depositorAccount: anchor.web3.PublicKey;
+  let winnerAccount: anchor.web3.PublicKey;
 
   beforeEach(async () => {
     await provider.connection.confirmTransaction(
       await provider.connection.requestAirdrop(
         payer.publicKey,
+        anchor.web3.LAMPORTS_PER_SOL * 2
+      )
+    );
+
+    await provider.connection.confirmTransaction(
+      await provider.connection.requestAirdrop(
+        winner.publicKey,
         anchor.web3.LAMPORTS_PER_SOL * 2
       )
     );
@@ -86,7 +95,13 @@ describe("deposit-prize", () => {
       false
     );
 
-    const tx = await program.methods
+    winnerAccount = getAssociatedTokenAddressSync(
+      mintTokenKp.publicKey,
+      winner.publicKey,
+      false
+    );
+
+    const tx1 = await program.methods
       .createPool()
       .accounts({
         pool: poolPda,
@@ -102,12 +117,10 @@ describe("deposit-prize", () => {
       .signers([payer])
       .rpc();
 
-    console.log("Create pool transaction signature", tx);
-  });
+    console.log("Create pool transaction signature", tx1);
 
-  it("deposit-prize", async () => {
     const winnerList = [
-      new PublicKey("ArTbfyWWNBLkDhU2ar8RBEPDHkEv6jVWJTwxjDnVYnMX"),
+      winner.publicKey,
       new PublicKey("6Nu9WYbDkGP6BBdYtRncPdDyQMT8QCRqr2jABPb9SpZQ"),
       new PublicKey("7pni3obgpjLCaDDswVsP1wDoUqDyCrvFesFESrAYwjo3"),
     ];
@@ -116,7 +129,7 @@ describe("deposit-prize", () => {
 
     const expired_time = new BN(100000); // by seconds
 
-    const tx = await program.methods
+    const tx2 = await program.methods
       .depositPrize(winnerList, amount, expired_time)
       .accounts({
         pool: poolPda,
@@ -133,17 +146,48 @@ describe("deposit-prize", () => {
       .signers([payer])
       .rpc();
 
-    console.log("Your transaction signature", tx);
+    console.log("Deposit prize transaction signature", tx2);
+  });
 
-    const data = await program.account.pool.fetch(poolPda);
-
-    console.log("Winner list", data.winnerList);
-
+  it("withdraw-prize", async () => {
+    let data = await program.account.pool.fetch(poolPda);
     assert.isTrue(
       data.winnerList
         .map((item) => item.toString())
-        .includes("ArTbfyWWNBLkDhU2ar8RBEPDHkEv6jVWJTwxjDnVYnMX"),
-      "Exist winner in list"
+        .includes(winner.publicKey.toBase58()),
+      "Winner is in list"
+    );
+
+    try {
+      const tx = await program.methods
+        .withdrawPrize()
+        .accounts({
+          pool: poolPda,
+          poolAuthority: poolAuthorityPda,
+          depositor: winner.publicKey,
+          mintToken: mintTokenKp.publicKey,
+          poolAccount: poolAccount,
+          depositorAccount: winnerAccount,
+
+          tokenProgram: TOKEN_PROGRAM_ID,
+          associatedTokenProgram: ASSOCIATED_PROGRAM_ID,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        })
+        .signers([winner])
+        .rpc();
+
+      console.log("Your transaction signature", tx);
+    } catch (err) {
+      console.error(err);
+    }
+
+    data = await program.account.pool.fetch(poolPda);
+    console.log(data.winnerList);
+    assert.isFalse(
+      data.winnerList
+        .map((item) => item.toString())
+        .includes(winner.publicKey.toBase58()),
+      "Winner redeemed prize"
     );
   });
 });
