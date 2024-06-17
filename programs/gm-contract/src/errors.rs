@@ -8,8 +8,11 @@ pub enum AppError {
     #[msg("Invalid prize amount")]
     InvalidPrizeAmount,
 
-    #[msg("Deposit too small")]
-    DepositTooSmall,
+    #[msg("Deposit not enough")]
+    DepositNotEnough,
+
+    #[msg("Prize already claim")]
+    PrizeAlreadyClaim,
 
     #[msg("Not winner")]
     NotWinner,

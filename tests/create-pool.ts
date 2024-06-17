@@ -8,6 +8,14 @@ import {
 } from "@coral-xyz/anchor/dist/cjs/utils/token";
 import { mintToken } from "./utils";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { Keypair } from "@solana/web3.js";
+import fs from "fs";
+
+function loadKeypairFromFile(filename: string): Keypair {
+  const secret = JSON.parse(fs.readFileSync(filename).toString()) as number[];
+  const secretKey = Uint8Array.from(secret);
+  return Keypair.fromSecretKey(secretKey);
+}
 
 describe("create-pool", () => {
   const provider = anchor.AnchorProvider.env();
@@ -16,6 +24,7 @@ describe("create-pool", () => {
   const program = anchor.workspace.GmContract as Program<GmContract>;
 
   const payer = anchor.web3.Keypair.generate();
+  // const payer = loadKeypairFromFile("/Users/mac/.config/solana/id.json");
 
   let poolPda: anchor.web3.PublicKey;
   let poolAuthorityPda: anchor.web3.PublicKey;
@@ -43,6 +52,8 @@ describe("create-pool", () => {
     )[0];
 
     mintTokenKp = anchor.web3.Keypair.generate();
+
+    console.log("Mint token address", mintTokenKp.publicKey.toBase58());
 
     await mintToken({
       connection: provider.connection,

@@ -13,6 +13,7 @@ pub fn create_pool(ctx: Context<CreatePool>) -> Result<()> {
     pool.admin = ctx.accounts.admin.key();
     pool.mint_token = ctx.accounts.mint_token.key();
     pool.winner_list = Vec::with_capacity(3);
+    pool.claimed_list = Vec::with_capacity(3);
 
     Ok(())
 }

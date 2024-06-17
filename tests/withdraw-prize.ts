@@ -182,9 +182,8 @@ describe("withdraw-prize", () => {
     }
 
     data = await program.account.pool.fetch(poolPda);
-    console.log(data.winnerList);
-    assert.isFalse(
-      data.winnerList
+    assert.isTrue(
+      data.claimedList
         .map((item) => item.toString())
         .includes(winner.publicKey.toBase58()),
       "Winner redeemed prize"

@@ -23,7 +23,7 @@ pub fn deposit_prize(
     require!(amount > 0, AppError::InvalidPrizeAmount);
     require!(
         amount <= ctx.accounts.depositor_account.amount,
-        AppError::DepositTooSmall
+        AppError::DepositNotEnough
     );
 
     let clock = Clock::get()?;
@@ -60,6 +60,7 @@ pub fn deposit_prize(
     // set winner list
     let pool = &mut ctx.accounts.pool;
     pool.winner_list = data;
+    pool.claimed_list.clear();
     pool.expired_time = expired_time;
 
     // transfer token A from depositer to pool account

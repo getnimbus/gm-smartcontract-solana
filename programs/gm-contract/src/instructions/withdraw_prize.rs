@@ -16,6 +16,13 @@ pub fn withdraw_prize(ctx: Context<WithdrawPrize>) -> Result<()> {
         AppError::NotWinner
     );
     require!(
+        !ctx.accounts
+            .pool
+            .claimed_list
+            .contains(&ctx.accounts.depositor.key()),
+        AppError::PrizeAlreadyClaim
+    );
+    require!(
         ctx.accounts.pool_account.amount > 0,
         AppError::PoolBalanceNotEnough
     );
@@ -62,9 +69,9 @@ pub fn withdraw_prize(ctx: Context<WithdrawPrize>) -> Result<()> {
         prize_amount * 10u64.pow(6),
     )?;
 
-    // remove winner from winner list
+    // add winner to claimed list
     let pool = &mut ctx.accounts.pool;
-    pool.winner_list.remove(index);
+    pool.claimed_list.push(ctx.accounts.depositor.key());
 
     Ok(())
 }
