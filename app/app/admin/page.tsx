@@ -22,7 +22,7 @@ export default function Component() {
     );
   };
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col h-full">
       {/* <header className="flex items-center justify-between h-16 px-4 bg-gray-100 dark:bg-gray-900 border-b">
         <div className="flex items-center">
           <h1 className="text-2xl font-bold">GM Dashboard</h1>
@@ -105,9 +105,6 @@ export default function Component() {
           </form>
         </Card>
       </div>
-      <footer className="bg-gray-100 dark:bg-gray-900 p-4 text-center text-sm text-gray-500 dark:text-gray-400">
-        &copy; 2024 Nimbus Inc
-      </footer>
     </div>
   );
 }
