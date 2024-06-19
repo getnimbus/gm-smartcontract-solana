@@ -4,7 +4,7 @@ mod errors;
 mod instructions;
 mod state;
 
-declare_id!("Ay6NVBNkzTkTXduiF6yFybfcipAjXriYr17LL8edb6YE");
+declare_id!("HpaRqapKNdoWUXhWnbzubaoKXADHpY7SBy8b4QpZ5UqM");
 
 #[program]
 pub mod gm_contract {

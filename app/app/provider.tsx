@@ -31,14 +31,17 @@ export default function Provider({
 
   return (
     <ReactQueryProvider>
-        <ConnectionProvider
-          // endpoint={"http://localhost:8899"}
-          endpoint={endpoint}
-        >
-          <WalletProvider wallets={wallets} autoConnect>
-            <WalletModalProvider>{children}</WalletModalProvider>
-          </WalletProvider>
-        </ConnectionProvider>
+      <ConnectionProvider
+        // endpoint={"http://localhost:8899"}
+        endpoint={
+          "https://solana-devnet.g.alchemy.com/v2/CPZpDld5DnzrpgrbBAM6b01gmiqTAIXL"
+        }
+        // endpoint={endpoint}
+      >
+        <WalletProvider wallets={wallets} autoConnect>
+          <WalletModalProvider>{children}</WalletModalProvider>
+        </WalletProvider>
+      </ConnectionProvider>
     </ReactQueryProvider>
   );
 }
