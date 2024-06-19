@@ -13,8 +13,6 @@ pub fn deposit_prize(
     amount: u64,
     expired_time: u64,
 ) -> Result<()> {
-    // TODO: check previous winner list and withdraw all prize to admin amount
-
     require!(
         ctx.accounts.depositor.key() == ctx.accounts.pool.admin.key(),
         AppError::InvalidAuthority

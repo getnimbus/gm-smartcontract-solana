@@ -23,6 +23,9 @@ pub enum AppError {
     #[msg("Invalid expired time")]
     InvalidExpiredTime,
 
+    #[msg("Missed deadline")]
+    MissedDeadline,
+
     #[msg("Invalid authority")]
     InvalidAuthority,
 }

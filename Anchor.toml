@@ -11,7 +11,7 @@ gm_contract = "Ay6NVBNkzTkTXduiF6yFybfcipAjXriYr17LL8edb6YE"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "Devnet"
 wallet = "/Users/mac/.config/solana/id.json"
 
 [scripts]

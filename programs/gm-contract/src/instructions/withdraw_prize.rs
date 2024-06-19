@@ -26,6 +26,11 @@ pub fn withdraw_prize(ctx: Context<WithdrawPrize>) -> Result<()> {
         ctx.accounts.pool_account.amount > 0,
         AppError::PoolBalanceNotEnough
     );
+    let clock = Clock::get()?;
+    require!(
+        ctx.accounts.pool.expired_time > clock.slot,
+        AppError::MissedDeadline
+    );
 
     // distribute prize amount
     let index = ctx
