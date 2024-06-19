@@ -23,8 +23,8 @@ describe("create-pool", () => {
 
   const program = anchor.workspace.GmContract as Program<GmContract>;
 
-  const payer = anchor.web3.Keypair.generate();
-  // const payer = loadKeypairFromFile("/Users/mac/.config/solana/id.json");
+  // const payer = anchor.web3.Keypair.generate();
+  const payer = loadKeypairFromFile("/Users/toanho/.config/solana/id.json");
 
   let poolPda: anchor.web3.PublicKey;
   let poolAuthorityPda: anchor.web3.PublicKey;

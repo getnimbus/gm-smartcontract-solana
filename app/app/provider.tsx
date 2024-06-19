@@ -33,9 +33,7 @@ export default function Provider({
     <ReactQueryProvider>
       <ConnectionProvider
         // endpoint={"http://localhost:8899"}
-        endpoint={
-          "https://solana-devnet.g.alchemy.com/v2/CPZpDld5DnzrpgrbBAM6b01gmiqTAIXL"
-        }
+        endpoint={process.env.NEXT_PUBLIC_RPC_URL!}
         // endpoint={endpoint}
       >
         <WalletProvider wallets={wallets} autoConnect>

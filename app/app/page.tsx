@@ -10,13 +10,21 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useWallet } from "@solana/wallet-adapter-react";
 import useAnchorProvider from "@/hooks/use-anchor-provider";
-import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { useToast } from "@/components/ui/use-toast";
 import GmContractProgram from "@/lib/gm-contract-program";
 import { redirect } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export default function Component() {
   const solanaWallet = useWallet();
   const provider = useAnchorProvider();
+  const queryClient = useQueryClient();
   const [userDidntClaimedYet, setUserDidntClaimedYet] = useState(false);
   const [userChecked, setUserChecked] = useState(false);
 
@@ -31,6 +39,8 @@ export default function Component() {
     },
   });
 
+  const { toast } = useToast();
+
   const checkUserIsClaimed = () => {
     if (userEvent) {
       setUserChecked(true);
@@ -42,6 +52,16 @@ export default function Component() {
 
       if (isClaimable) {
         setUserDidntClaimedYet(true);
+      } else {
+        toast({
+          className: cn(
+            "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4"
+          ),
+          variant: "destructive",
+          title: "Error",
+          description:
+            "You are not eligible to claim the reward or it has already been",
+        });
       }
     }
   };
@@ -50,21 +70,57 @@ export default function Component() {
     useMutation({
       mutationKey: ["withdraw-prize", provider.publicKey],
       mutationFn: async () => {
-        if (solanaWallet.publicKey) {
-          const program = new GmContractProgram(provider);
-          const tx = await program.withDrawPrize(solanaWallet.publicKey);
-          const signature = await provider.sendAndConfirm(tx);
-          console.log({ tx, signature });
+        try {
+          if (solanaWallet.publicKey) {
+            const program = new GmContractProgram(provider);
+            const tx = await program.withDrawPrize(solanaWallet.publicKey);
+            const signature = await provider.sendAndConfirm(tx);
+            console.log({ tx, signature });
+            toast({
+              className: cn(
+                "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4"
+              ),
+              variant: "success",
+              title: "Success",
+              description: (
+                <>
+                  Claim successfully
+                  <Button variant="link">
+                    <a
+                      target="_blank"
+                      href={`https://explorer.solana.com/tx/}`}
+                    >
+                      View Txn
+                    </a>
+                  </Button>
+                </>
+              ),
+            });
 
-          return signature;
+            setUserDidntClaimedYet(false);
+            queryClient.invalidateQueries({
+              queryKey: ["view-user-reward", provider.publicKey],
+            });
+            return signature;
+          }
+        } catch (error: any) {
+          toast({
+            className: cn(
+              "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4"
+            ),
+            variant: "destructive",
+            title: "Error",
+            description: error.message,
+          });
         }
       },
     });
 
   useEffect(() => {
     if (
+      solanaWallet.publicKey?.toBase58() &&
       solanaWallet.publicKey?.toBase58() ===
-      "7pni3obgpjLCaDDswVsP1wDoUqDyCrvFesFESrAYwjo3"
+        process.env.NEXT_PUBLIC_ADMIN_ADDRESS
     ) {
       return redirect("/admin");
     }
@@ -112,11 +168,12 @@ export default function Component() {
               <CheckIcon className="w-4 h-4 mr-2" />
               Check eligible
             </Button>
-            {userChecked && !userDidntClaimedYet && (
+            {/* {userChecked && !userDidntClaimedYet && (
               <p className="text-red-500 text-center">
-                You are already claimed
+                You are not eligible to claim the reward or it has already been
+                claimed.
               </p>
-            )}
+            )} */}
           </Card>
         </div>
       )}

@@ -5,14 +5,14 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-gm_contract = "HpaRqapKNdoWUXhWnbzubaoKXADHpY7SBy8b4QpZ5UqM"
+gm_contract = "Eja9QQ5rzpFLN35qngz1APcUF6s86tVREVz1WUYitdhm"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
 cluster = "localnet"
-wallet = "/Users/h123mn/.config/solana/id.json"
+wallet = "/Users/toanho/.config/solana/id.json"
 
 [scripts]
 # test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/create-pool.ts"

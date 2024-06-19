@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import Provider from "./provider";
+import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 import Header from "@/components/layout/header";
 
@@ -38,6 +39,8 @@ export default function RootLayout({
           <main className="min-h-screen">
             <Header />
             <div className="h-[85vh]">{children}</div>
+            <Toaster />
+
             <footer className="bg-gray-100 dark:bg-gray-900 p-4 text-center text-sm text-gray-500 dark:text-gray-400 h-[5vh]">
               &copy; 2024 Nimbus Inc
             </footer>

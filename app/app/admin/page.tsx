@@ -16,10 +16,13 @@ import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
 import GmContractProgram from "@/lib/gm-contract-program";
 import useAnchorProvider from "@/hooks/use-anchor-provider";
+import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 
 export default function Component() {
   const solanaWallet = useWallet();
   const provider = useAnchorProvider();
+  const { toast } = useToast();
   const { register, handleSubmit } = useForm();
 
   const onSubmit = async (data: any) => {
@@ -59,24 +62,54 @@ export default function Component() {
     listWinner: string[],
     amountDeposist: string
   ) => {
-    if (solanaWallet.publicKey) {
-      const program = new GmContractProgram(provider);
-      const tx = await program.depositPrize(
-        solanaWallet.publicKey,
-        listWinner,
-        amountDeposist
-      );
-      const signature = await provider.sendAndConfirm(tx);
-      console.log({ tx, signature });
+    try {
+      if (solanaWallet.publicKey) {
+        const program = new GmContractProgram(provider);
+        const tx = await program.depositPrize(
+          solanaWallet.publicKey,
+          listWinner,
+          amountDeposist
+        );
+        const signature = await provider.sendAndConfirm(tx);
+        console.log({ tx, signature });
 
-      return signature;
+        toast({
+          className: cn(
+            "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4"
+          ),
+          variant: "success",
+          title: "Success",
+          description: (
+            <>
+              Deposit pool prize successfully{" "}
+              <Button variant="link">
+                <a target="_blank" href={`https://explorer.solana.com/tx/}`}>
+                  View Txn
+                </a>
+              </Button>
+            </>
+          ),
+        });
+
+        return signature;
+      }
+    } catch (error: any) {
+      toast({
+        className: cn(
+          "top-0 right-0 flex fixed md:max-w-[420px] md:top-4 md:right-4"
+        ),
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
     }
   };
 
   useEffect(() => {
     if (
+      solanaWallet.publicKey?.toBase58() &&
       solanaWallet.publicKey?.toBase58() !==
-      "7pni3obgpjLCaDDswVsP1wDoUqDyCrvFesFESrAYwjo3"
+        process.env.NEXT_PUBLIC_ADMIN_ADDRESS
     ) {
       return redirect("/");
     }

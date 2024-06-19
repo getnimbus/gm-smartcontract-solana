@@ -38,17 +38,15 @@ export default class GmContractProgram {
     this.provider = provider;
     this.program = new Program(
       IDL,
-      "Ay6NVBNkzTkTXduiF6yFybfcipAjXriYr17LL8edb6YE",
+      process.env.NEXT_PUBLIC_PROGRAM_ID!,
       provider
     );
-    this.mintTokenKp = new PublicKey(
-      "GSm5YnndnHNAxTcupJFxf18nn4SKx3Lb8JmXa7dyMtR"
-    );
+    this.mintTokenKp = new PublicKey(process.env.NEXT_PUBLIC_TOKEN_ADDRESS!);
   }
 
   async createPool(publicKey: PublicKey) {
     //   const payer = anchor.web3.Keypair.generate();
-    const payer = await fetchKeypair("/Users/h123mn/.config/solana/id.json");
+    const payer = await fetchKeypair("/Users/toanho/.config/solana/id.json");
     let poolPda: anchor.web3.PublicKey;
     let poolAuthorityPda: anchor.web3.PublicKey;
 
@@ -128,12 +126,17 @@ export default class GmContractProgram {
 
     console.log({ amount: amount.toString(), amountPrize });
 
-    const expired_time = new BN(1818767419); // by seconds
+    const connection = new Connection(
+      process.env.NEXT_PUBLIC_RPC_URL!,
+      "processed"
+    );
+    const slot = (await connection.getSlot()) + 1_000_000; // expired_time
+    const expiredTime = new BN(slot);
 
     console.log("code us run");
 
     const tx = this.program.methods
-      .depositPrize(winnerList, amount, expired_time)
+      .depositPrize(winnerList, amount, expiredTime)
       .accounts({
         pool: poolPda,
         poolAuthority: poolAuthorityPda,
@@ -160,26 +163,12 @@ export default class GmContractProgram {
 
     let depositorAccount: anchor.web3.PublicKey;
 
-    let adminKey = new PublicKey(
-      "7pni3obgpjLCaDDswVsP1wDoUqDyCrvFesFESrAYwjo3"
-    );
-
-    const connection = new Connection(
-      "https://solana-devnet.g.alchemy.com/v2/CPZpDld5DnzrpgrbBAM6b01gmiqTAIXL",
-      "processed"
-    );
-    const slot = (await connection.getSlot()) + 1000000; // expired_time
-
-    console.log({ slot });
+    let adminKey = new PublicKey(process.env.NEXT_PUBLIC_ADMIN_ADDRESS!);
 
     poolPda = anchor.web3.PublicKey.findProgramAddressSync(
       [Buffer.from("pool"), adminKey.toBuffer()],
       this.program.programId
     )[0];
-
-    // const data = await this.program.account.pool.fetch(poolPda);
-    // console.log(data.winnerList.map((item) => item.toBase58()));
-    // console.log(data.claimedList);
 
     poolAuthorityPda = anchor.web3.PublicKey.findProgramAddressSync(
       [Buffer.from("authority"), adminKey.toBuffer()],
@@ -217,9 +206,7 @@ export default class GmContractProgram {
   }
 
   async viewUserReward() {
-    let adminKey = new PublicKey(
-      "7pni3obgpjLCaDDswVsP1wDoUqDyCrvFesFESrAYwjo3"
-    );
+    let adminKey = new PublicKey(process.env.NEXT_PUBLIC_ADMIN_ADDRESS!);
 
     const poolPda = anchor.web3.PublicKey.findProgramAddressSync(
       [Buffer.from("pool"), adminKey.toBuffer()],

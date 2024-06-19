@@ -1,7 +1,7 @@
 import { Cluster, PublicKey } from "@solana/web3.js";
 
 export const GM_REWARD_ID = new PublicKey(
-  "HpaRqapKNdoWUXhWnbzubaoKXADHpY7SBy8b4QpZ5UqM"
+  "Eja9QQ5rzpFLN35qngz1APcUF6s86tVREVz1WUYitdhm"
 );
 
 export function getProgramId(cluster: Cluster) {
