@@ -1,11 +1,8 @@
 "use client";
 
-import * as anchor from "@coral-xyz/anchor";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import {
   ConnectionProvider,
-  useWallet,
-  WalletContextState,
   WalletProvider,
 } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
@@ -15,8 +12,7 @@ import {
 } from "@solana/wallet-adapter-wallets";
 import { useMemo } from "react";
 import { ReactQueryProvider } from "./react-query-provider";
-import { clusterApiUrl, Connection } from "@solana/web3.js";
-import { AnchorProvider, Wallet } from "@coral-xyz/anchor";
+import { clusterApiUrl } from "@solana/web3.js";
 
 export default function Provider({
   children,
