@@ -6,37 +6,37 @@ import ConnectWalletButton from "../connect-wallet-button";
 import { useWallet } from "@solana/wallet-adapter-react";
 
 export default function Header() {
-  // const darkmModeStorage = localStorage.getItem("Dark Mode") ?? false;
-  const [darkMode, setDarkMode] = useState(false);
   // const { connected, connect, publicKey, sendTransaction } = useWallet();
+  // const darkmModeStorage = localStorage.getItem("Dark Mode") ?? false;
+  // const [darkMode, setDarkMode] = useState(false);
   const wallet = useWallet();
 
-  useEffect(() => {
-    if (darkMode) {
-      localStorage.setItem("Dark Mode", "light");
-    } else {
-      localStorage.setItem("Dark Mode", "dark");
-    }
-  }, [darkMode]);
+  // useEffect(() => {
+  //   if (darkMode) {
+  //     localStorage.setItem("Dark Mode", "light");
+  //   } else {
+  //     localStorage.setItem("Dark Mode", "dark");
+  //   }
+  // }, [darkMode]);
 
-  // console.log({ darkmModeStorage });
+  // console.log({ wallet });
 
   return (
-    <header className="flex items-center justify-between h-16 px-4 bg-gray-100 dark:bg-gray-900 border-b">
+    <header className="flex items-center justify-between h-[10vh] px-4 bg-gray-100 dark:bg-gray-900 border-b">
       <div className="flex items-center">
         <h1 className="text-2xl font-bold">GM Dashboard</h1>
       </div>
       <div className="flex items-center gap-2">
-        <Button
+        {/* <Button
           variant="ghost"
           size="icon"
           onClick={() => setDarkMode(!darkMode)}
         >
           <SunMoonIcon className="w-5 h-5" />
           <span className="sr-only">Toggle dark mode</span>
-        </Button>
+        </Button> */}
 
-        {/* <ConnectWalletButton /> */}
+        <ConnectWalletButton />
 
         {/* {!walletConnected ? (
           <Button variant="outline" size="sm">

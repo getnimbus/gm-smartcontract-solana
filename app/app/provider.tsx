@@ -1,8 +1,11 @@
 "use client";
 
+import * as anchor from "@coral-xyz/anchor";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import {
   ConnectionProvider,
+  useWallet,
+  WalletContextState,
   WalletProvider,
 } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
@@ -12,7 +15,8 @@ import {
 } from "@solana/wallet-adapter-wallets";
 import { useMemo } from "react";
 import { ReactQueryProvider } from "./react-query-provider";
-import { clusterApiUrl } from "@solana/web3.js";
+import { clusterApiUrl, Connection } from "@solana/web3.js";
+import { AnchorProvider, Wallet } from "@coral-xyz/anchor";
 
 export default function Provider({
   children,
@@ -31,14 +35,17 @@ export default function Provider({
 
   return (
     <ReactQueryProvider>
-        <ConnectionProvider
-          // endpoint={"http://localhost:8899"}
-          endpoint={endpoint}
-        >
-          <WalletProvider wallets={wallets} autoConnect>
-            <WalletModalProvider>{children}</WalletModalProvider>
-          </WalletProvider>
-        </ConnectionProvider>
+      <ConnectionProvider
+        // endpoint={"http://localhost:8899"}
+        endpoint={
+          "https://solana-devnet.g.alchemy.com/v2/CPZpDld5DnzrpgrbBAM6b01gmiqTAIXL"
+        }
+        // endpoint={endpoint}
+      >
+        <WalletProvider wallets={wallets} autoConnect>
+          <WalletModalProvider>{children}</WalletModalProvider>
+        </WalletProvider>
+      </ConnectionProvider>
     </ReactQueryProvider>
   );
 }
